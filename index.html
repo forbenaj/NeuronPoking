@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Neuron Poking</title>
+<link rel="stylesheet" href="style.css">
+</head><body>
+<div id="app">
+<section id="left">
+  <header>
+    <div class="row"><b>NEURON POKING</b>
+      <label>Model <select id="model" aria-label="Select model">
+        <option value="qwen" selected>Qwen2.5 0.5B Instruct</option>
+        <option value="gemma">Gemma 3 1B IT</option>
+      </select></label>
+      <button id="load">Load model!</button>
+      <button id="unload" type="button" hidden disabled>Unload model</button>
+      <span id="model-info"></span><span class="sp"></span>
+      <button id="undo" type="button" title="Undo (Ctrl+Z)" disabled>Undo</button>
+      <button id="redo" type="button" title="Redo (Ctrl+Shift+Z)" disabled>Redo</button>
+      <button id="knob-mode-toggle" type="button" aria-pressed="false">Knob mode</button>
+      <button id="settings-open">Settings</button></div>
+    <div id="layers"></div>
+    <div class="row"><span id="info"></span><span id="zoom-info">Zoom 100% · mouse wheel</span><span class="sp"></span><span id="ro">paint pixels · choose a tool and activation above</span>
+      <button id="rl">Reset layer</button><button id="ra">Reset all</button></div>
+    <div id="paint-tools" class="row" hidden>
+      <b>Paint</b>
+      <div id="paint-tool-buttons" role="group" aria-label="Paint tool">
+        <button class="paint-tool-button" type="button" data-paint-tool="brush" aria-label="Brush" aria-pressed="false" title="Brush"><img src="brush.png" alt=""></button>
+        <button class="paint-tool-button" type="button" data-paint-tool="bucket" aria-label="Paint bucket" aria-pressed="false" title="Paint bucket"><img src="bucket.png" alt=""></button>
+        <button class="paint-tool-button" type="button" data-paint-tool="rectangle" aria-label="Rectangle" aria-pressed="false" title="Rectangle"><img src="rectangle.png" alt=""></button>
+      </div>
+      <label id="brush-size-wrap">Brush size <span class="paint-dial"><canvas id="brush-size" role="slider" tabindex="0" aria-label="Brush size" aria-valuemin="1" aria-valuemax="32" aria-valuenow="1"></canvas><span id="brush-size-value">1</span></span></label>
+      <label>Activation <span class="paint-dial"><canvas id="paint-value" role="slider" tabindex="0" aria-label="Paint activation" aria-valuemin="-100" aria-valuemax="100" aria-valuenow="100"></canvas><span id="paint-value-label">+1.00</span></span></label>
+    </div>
+  </header>
+  <div id="sc">
+    <div id="zoom-controls" aria-label="Canvas zoom controls">
+      <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+      <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
+      <button id="zoom-reset" type="button" aria-label="Reset zoom" hidden>Reset</button>
+    </div>
+    <div id="sp"><canvas id="cv"></canvas></div>
+  </div>
+</section>
+<aside id="chat" class="unloaded" hidden aria-label="Chat">
+  <div id="top">
+    <b>Chat</b>
+  </div>
+  <div id="log"></div>
+  <div id="ctl">
+    <label>temp <input id="temp" type="range" min="0" max="1.5" step="0.05" value="0"> <span id="tv">0.00</span></label>
+    <label>max tokens <input id="mx" type="number" min="1" max="2048" value="256"></label>
+    <button id="stop" disabled>Stop</button><button id="clr">Clear</button>
+  </div>
+  <div id="comp"><textarea id="in" rows="3" placeholder="Message (Enter to generate)"></textarea><button id="send" disabled>Generate</button></div>
+  <div id="sv">Steering: none configured.</div>
+</aside>
+<aside id="tester" class="unloaded" aria-label="Tester">
+  <div id="tester-top" tabindex="0" aria-label="Move Tester panel with arrow keys">
+    <b>Tester</b><label><input id="tester-enabled" type="checkbox" checked> On</label>
+  </div>
+  <input id="tester-prompt" type="text" value="Say one word." aria-label="Test prompt">
+  <div id="tester-response" aria-live="polite">Load a model to test.</div>
+</aside>
+<div id="panel-toggles">
+  <button id="tester-toggle" type="button" aria-controls="tester" aria-expanded="true">Tester</button>
+  <button id="chat-toggle" type="button" aria-controls="chat" aria-expanded="false">Chat</button>
+</div>
+<div id="status-bar">
+  <span id="st" role="status" aria-live="polite">No model loaded. Select a model and choose Load model.</span>
+</div>
+</div>
+
+<dialog id="settings-dialog">
+  <form method="dialog" id="settings-form">
+    <div class="row"><b>Settings</b><span class="sp"></span><button value="close" aria-label="Close settings">Close</button></div>
+    <label>Maximum activation <span class="range-control"><input id="max-activation" type="range" min="0.05" max="20" step="0.05"><output id="max-activation-value"></output></span></label>
+    <div class="row"><span class="sp"></span><button value="close">Done</button></div>
+  </form>
+</dialog>
+
+<script type="module" src="main.js"></script>
+</body></html>
