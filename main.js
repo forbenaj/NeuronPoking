@@ -618,14 +618,16 @@ addEventListener('keydown', e => {
   if (e.key === '[') selectLayer(layer - 1); if (e.key === ']') selectLayer(layer + 1); });
 
 /* ================= UI: chat ================= */
-const history = []; let busy = false, testerTimer = 0, testerPending = false;
+const history = []; let busy = false, testerTimer = 0, testerPending = false, testerRunning = false, testerRunId = 0;
 const log = $('log');
 /** Append a safely rendered chat message and return its text span. */
 function addMsg(role, text) { const d = document.createElement('div'); d.className = 'm';
   d.innerHTML = '<i>' + (role === 'user' ? 'YOU' : activeModel.name.toUpperCase()) + '</i><span></span>'; d.lastChild.textContent = text; log.append(d); log.scrollTop = log.scrollHeight; return d.lastChild; }
 /** Debounce a tester run after a steering edit. */
 function requestTesterRun() {
+  testerRunId++;
   clearTimeout(testerTimer);
+  if (testerRunning) { testerPending = true; rt.stop(); }
   if (!$('tester-enabled').checked || !rt.ready) return;
   testerTimer = setTimeout(runTester, 350);
 }
@@ -635,8 +637,9 @@ async function runTester() {
   if (busy) { testerPending = true; return; }
   const prompt = $('tester-prompt').value.trim();
   if (!prompt) { $('tester-response').textContent = 'Enter a test prompt.'; return; }
-  const model = activeModel;
+  const model = activeModel, runId = testerRunId;
   busy = true;
+  testerRunning = true;
   testerPending = false;
   $('send').disabled = true;
   $('stop').disabled = false;
@@ -647,20 +650,22 @@ async function runTester() {
     if (store.total() && !rt.steerer)
       throw new Error('Steering is configured but unavailable: ' + rt.steerErr);
     if (rt.steerer) await rt.applySteering(sparse);
+    if (runId !== testerRunId) return;
     let output = '';
     const result = await rt.generate([{ role: 'user', content: prompt }],
       { temperature: 0, max_tokens: 16 }, token => {
         output += token;
-        if ($('tester-enabled').checked && model === activeModel && $('tester-prompt').value.trim() === prompt)
+        if (runId === testerRunId && $('tester-enabled').checked && model === activeModel && $('tester-prompt').value.trim() === prompt)
           $('tester-response').textContent = output;
       });
-    if ($('tester-enabled').checked && model === activeModel && $('tester-prompt').value.trim() === prompt)
+    if (runId === testerRunId && $('tester-enabled').checked && model === activeModel && $('tester-prompt').value.trim() === prompt)
       $('tester-response').textContent = result || '(No response)';
   } catch (e) {
-    if ($('tester-enabled').checked && model === activeModel)
+    if (runId === testerRunId && $('tester-enabled').checked && model === activeModel)
       $('tester-response').textContent = 'Test failed: ' + e.message;
   } finally {
     busy = false;
+    testerRunning = false;
     $('send').disabled = !rt.ready;
     $('stop').disabled = true;
     $('unload').disabled = !rt.ready;
@@ -736,10 +741,11 @@ addEventListener('resize', () => {
 $('tester-enabled').onchange = e => {
   clearTimeout(testerTimer);
   testerPending = false;
+  if (!e.target.checked && testerRunning) { testerRunId++; rt.stop(); }
   if (e.target.checked) requestTesterRun();
 };
 /** Schedule a tester run when its prompt is changed. */
-$('tester-prompt').onchange = requestTesterRun;
+$('tester-prompt').oninput = requestTesterRun;
 /** Clear visible and conversational chat history when generation is idle. */
 $('clr').onclick = () => { if (!busy) { history.length = 0; log.innerHTML = ''; } };
 /** Interrupt an active model generation. */
