@@ -3,6 +3,8 @@
 Neuron Poking is a browser-based experiment for steering individual MLP hidden
 units in Large Language Models using paint tools and knobs, specifically for Qwen2.5 0.5B Instruct and Gemma 3 1B IT. It runs the model locally with WebLLM and WebGPU.
 
+[Play with it here!](https://neuron.cosas.ar)
+
 ## Run locally
 
 Use a browser with WebGPU support (modern Chromium) and serve the files over HTTP.
