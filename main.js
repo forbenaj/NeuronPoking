@@ -340,8 +340,7 @@ function idxAt(e) { const b = cv.getBoundingClientRect(), c = Math.floor((e.clie
 function readout() { const el = $('ro'); if (hover < 0) {
     el.textContent = knobMode ? 'drag a knob vertically · shift = fine · double-click = reset' : 'paint pixels · choose a tool and activation intensity'; return; }
   const v = store.get(layer, hover);
-  el.textContent = !knobMode ? `L${layer} · Pixel ${hover} · ${v > 0 ? '+' : ''}${v.toFixed(2)}` :
-    `L${layer} · N${hover} · ${v > 0 ? '+' : ''}${v.toFixed(2)} · gain ×${(1 + GAIN * v).toFixed(2)}`; }
+  el.textContent = `L${layer} · N${hover} · ${v > 0 ? '+' : ''}${v.toFixed(2)} · gain ×${(1 + GAIN * v).toFixed(2)}`; }
 /** Convert the paint dial percentage to the current activation range. */
 function paintActivation() { return Math.round(settings.paintAmount / 100 * settings.max * 100) / 100; }
 /** Set one valid neuron to an activation value. */
