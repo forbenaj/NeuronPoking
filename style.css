@@ -38,10 +38,10 @@ header{padding:8px;border-bottom:1px solid #000;display:flex;flex-direction:colu
 #top{padding:8px;border-bottom:1px solid #000;display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 #top label{display:flex;align-items:center;gap:5px}
 header .row label{display:flex;align-items:center;gap:5px}
-#tester-top{display:flex;align-items:center;justify-content:space-between;cursor:move;touch-action:none;user-select:none}
+#tester-top{display:flex;align-items:center;justify-content:space-between;cursor:move;touch-action:none;user-select:none;border-bottom:1px solid #000}
 #tester-top:focus-visible{outline:1px solid #000;outline-offset:2px}
-#tester-top label{display:flex;align-items:center;gap:4px}
-#tester-prompt{width:100%;font-size:10px;color:#777}
+#tester-top label{display:flex;align-items:center;gap:4px;}
+#tester-prompt{width:100%;font-size:10px;color:#777; border: none; padding: 0; margin: 0; background: transparent; resize: none; overflow: hidden;}
 #tester-response{flex:1;min-height:0;overflow:auto;font-size:18px;white-space:pre-wrap;overflow-wrap:anywhere}
 #log{flex:1;overflow-y:auto;padding:0 8px;min-height:0}
 .m{padding:8px 0;border-bottom:1px solid #000;white-space:pre-wrap;word-break:break-word}
